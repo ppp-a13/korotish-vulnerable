@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Регистрация - korotish{% endblock %}
+{% block content %}
+<h1>Регистрация</h1>
+{% if error %}<p style="color: red;">{{ error }}</p>{% endif %}
+<form method="post" action="/register">
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Пароль" required>
+    <button type="submit">Зарегистрироваться</button>
+</form>
+<p><a href="/login">Уже есть аккаунт? Войти</a></p>
+{% endblock %}
