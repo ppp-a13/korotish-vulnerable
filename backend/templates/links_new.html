@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Новая ссылка - korotish{% endblock %}
+{% block content %}
+<h1>Создать ссылку</h1>
+{% if error %}<p style="color: red;">{{ error }}</p>{% endif %}
+<form method="post" action="/links/new">
+    <input type="url" name="target_url" placeholder="Ссылка, которую нужно сохранить" required>
+    <input type="text" name="custom_alias" placeholder="Свой алиас (необязательно)">
+    <input type="text" name="title" placeholder="Заголовок (необязательно)">
+    <input type="text" name="description" placeholder="Описание (необязательно)">
+    <button type="submit">Создать</button>
+</form>
+{% endblock %}

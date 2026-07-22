@@ -5,11 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.routes import auth as auth_routes
 from app.routes.api import auth as api_auth_routes
+from app.routes import pages as pages_routes
 
 app = FastAPI(title='korotish')
 
 app.include_router(auth_routes.router, tags=['auth-html'])
 app.include_router(api_auth_routes.router, prefix='/api/auth', tags=['auth-api'])
+app.include_router(pages_routes.router, tags=['pages'])
 
 
 @app.get('/health')

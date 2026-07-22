@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}korotish — сократи ссылку{% endblock %}
+{% block content %}
+<h1>korotish</h1>
+<p>Вставь длинную ссылку — получи короткую.</p>
+
+{% if created_link %}
+<p>Готово: <a href="/l/{{ created_link.code }}">/l/{{ created_link.code }}</a></p>
+{% endif %}
+
+<form method="post" action="/">
+    <input type="url" name="target_url" placeholder="https://example.com" required>
+    <button type="submit">Сократить</button>
+</form>
+
+<p><a href="/login">Войти</a> · <a href="/register">Регистрация</a> · <a href="/links/new">Создать ссылку с настройками</a></p>
+{% endblock %}
