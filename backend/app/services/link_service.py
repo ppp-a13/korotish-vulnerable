@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Link, User
 from app.repositories.link_repository import create_link, get_link_by_code
 from app.repositories.click_repository import create_click
+from app.repositories.click_repository import count_clicks_for_link
+from app.repositories.link_repository import get_link_by_id
 
 CODE_ALPHABET = string.ascii_letters + string.digits
 CODE_LENGTH = 7
@@ -19,7 +21,7 @@ class LinkNotFoundError(Exception):
 
 
 async def _generate_unique_code(db: AsyncSession) -> str:
-    for _ in (5):
+    for _ in range(5):
         candidate = ''.join(secrets.choice(CODE_ALPHABET) for _ in range(CODE_LENGTH))
         if await get_link_by_code(db, candidate) is None:
             return candidate
@@ -58,3 +60,12 @@ async def resolve_link(db: AsyncSession, code: str, ip: str, user_agent: str | N
 
     await create_click(db, link_id=link.id, ip=ip, user_agent=user_agent)
     return link
+
+
+async def get_link_with_stats(db: AsyncSession, link_id: int) -> tuple[Link, int]:
+    link = await get_link_by_id(db, link_id)
+    if link is None:
+        raise LinkNotFoundError()
+
+    click_count = await count_clicks_for_link(db, link_id)
+    return link, click_count

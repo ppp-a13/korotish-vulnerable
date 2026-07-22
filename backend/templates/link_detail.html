@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ link.title or link.code }} - korotish{% endblock %}
+{% block content %}
+<h1>{{ link.title or link.code }}</h1>
+{% if link.description %}<p>{{ link.description }}</p>{% endif %}
+<p>Короткая ссылка: <a href="/l/{{ link.code }}">/l/{{ link.code }}</a></p>
+<p>Переадресация: {{ link.target_url }}</p>
+<p>Переходов: {{ click_count }}</p>
+{% endblock %}

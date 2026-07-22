@@ -28,3 +28,7 @@ async def create_link(
     await db.commit()
     await db.refresh(link)
     return link
+
+async def get_link_by_id(db: AsyncSession, link_id: int) -> Link | None:
+    result = await db.execute(select(Link).where(Link.id == link_id))
+    return result.scalar_one_or_none
