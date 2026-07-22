@@ -5,12 +5,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Link, User
 from app.repositories.link_repository import create_link, get_link_by_code
+from app.repositories.click_repository import create_click
 
 CODE_ALPHABET = string.ascii_letters + string.digits
 CODE_LENGTH = 7
 
 
 class AliasTakenError(Exception):
+    pass
+
+class LinkNotFoundError(Exception):
     pass
 
 
@@ -45,3 +49,12 @@ async def create_new_link(
         title=title,
         description=description,
     )
+
+
+async def resolve_link(db: AsyncSession, code: str, ip: str, user_agent: str | None) -> Link:
+    link = await get_link_by_code(db, code)
+    if link is None:
+        raise LinkNotFoundError()
+
+    await create_click(db, link_id=link.id, ip=ip, user_agent=user_agent)
+    return link
