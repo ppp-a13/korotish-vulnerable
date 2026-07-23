@@ -1,7 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Link
+from app.models import Link, Click
 
 
 async def get_link_by_code(db: AsyncSession, code: str) -> Link | None:
@@ -13,7 +13,7 @@ async def create_link(
     db: AsyncSession,
     code: str,
     target_url: str,
-    owner_id: str | None,
+    owner_id: int | None,
     title: str | None,
     description: str | None,
 ) -> Link:
@@ -31,4 +31,15 @@ async def create_link(
 
 async def get_link_by_id(db: AsyncSession, link_id: int) -> Link | None:
     result = await db.execute(select(Link).where(Link.id == link_id))
-    return result.scalar_one_or_none
+    return result.scalar_one_or_none()
+
+
+async def list_links_with_click_counts(db: AsyncSession, owner_id: int) -> list[tuple[Link, int]]:
+    result = await db.execute(
+        select(Link, func.count(Click.id))
+        .outerjoin(Click, Click.link_id == Link.id)
+        .where(Link.owner_id == owner_id)
+        .group_by(Link.id)
+        .order_by(Link.created_at.desc())
+    )
+    return [(link, count) for link, count in result.all()]

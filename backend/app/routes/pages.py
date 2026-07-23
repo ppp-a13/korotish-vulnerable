@@ -7,6 +7,7 @@ from app.dependencies import get_current_user
 from app.models import User
 from app.services.link_service import AliasTakenError, create_new_link
 from app.templating import templates
+from app.services.link_service import get_dashboard_links
 
 router = APIRouter()
 
@@ -56,3 +57,14 @@ async def new_link_submit(
         )
     
     return RedirectResponse(url='/dashboard', status_code=303)
+
+@router.get('/dashboard')
+async def dashboard(
+    request: Request,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    links_with_counts = await get_dashboard_links(db, user)
+    return templates.TemplateResponse(
+        request, 'dashboard.html', {'links_with_counts': links_with_counts}
+    )

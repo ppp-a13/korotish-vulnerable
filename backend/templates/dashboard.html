@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Мои ссылки - korotish{% endblock %}
+{% block content %}
+<h1>Мои ссылки</h1>
+<p><a href="/links/new">+ Создать ссылку</a></p>
+
+{% if links_with_counts %}
+<table>
+    <thead>
+        <tr><th>Код</th><th>Заголовок</th><th>Переходы</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for link, click_count in links_with_counts %}
+        <tr>
+            <td>{{ link.code }}</td>
+            <td>{{ link.title or '—' }}</td>
+            <td>{{ click_count }}</td>
+            <td><a href="/links/{{ link.id }}">Открыть</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Пока нет ни одной ссылки.</p>
+{% endif %}
+
+<form method="post" action="/logout">
+    <button type="submit">Выйти</button>
+</form>
+{% endblock %}

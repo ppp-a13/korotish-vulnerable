@@ -8,6 +8,7 @@ from app.repositories.link_repository import create_link, get_link_by_code
 from app.repositories.click_repository import create_click
 from app.repositories.click_repository import count_clicks_for_link
 from app.repositories.link_repository import get_link_by_id
+from app.repositories.link_repository import list_links_with_click_counts
 
 CODE_ALPHABET = string.ascii_letters + string.digits
 CODE_LENGTH = 7
@@ -69,3 +70,7 @@ async def get_link_with_stats(db: AsyncSession, link_id: int) -> tuple[Link, int
 
     click_count = await count_clicks_for_link(db, link_id)
     return link, click_count
+
+
+async def get_dashboard_links(db: AsyncSession, user: User) -> list[tuple[Link, int]]:
+    return await list_links_with_click_counts(db, owner_id=user.id)
