@@ -1,5 +1,5 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Click
 
@@ -12,5 +12,7 @@ async def create_click(db: AsyncSession, link_id: int, ip: str, user_agent: str 
 
 
 async def count_clicks_for_link(db: AsyncSession, link_id: int) -> int:
-    result = await db.execute(select(func.count()).select_from(Click).where(Click.link_id == link_id))
+    result = await db.execute(
+        select(func.count()).select_from(Click).where(Click.link_id == link_id)
+    )
     return result.scalar_one()

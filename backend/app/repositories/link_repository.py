@@ -1,7 +1,7 @@
-from sqlalchemy import select, func, or_
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Link, Click
+from app.models import Click, Link
 
 
 async def get_link_by_code(db: AsyncSession, code: str) -> Link | None:
@@ -29,6 +29,7 @@ async def create_link(
     await db.refresh(link)
     return link
 
+
 async def get_link_by_id(db: AsyncSession, link_id: int) -> Link | None:
     result = await db.execute(select(Link).where(Link.id == link_id))
     return result.scalar_one_or_none()
@@ -46,7 +47,7 @@ async def list_links_with_click_counts(db: AsyncSession, owner_id: int) -> list[
 
 
 async def search_links_by_owner(db: AsyncSession, owner_id: int, query: str) -> list[Link]:
-    pattern = f'%{query}%'
+    pattern = f"%{query}%"
     result = await db.execute(
         select(Link)
         .where(Link.owner_id == owner_id)

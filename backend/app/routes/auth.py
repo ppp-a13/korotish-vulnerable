@@ -19,20 +19,20 @@ router = APIRouter()
 
 def _set_auth_cookie(response, token: str) -> None:
     response.set_cookie(
-        key='access_token',
+        key="access_token",
         value=token,
         httponly=True,
-        samesite='lax',
+        samesite="lax",
         max_age=60 * 60,
     )
 
 
-@router.get('/register')
+@router.get("/register")
 async def register_form(request: Request):
-    return templates.TemplateResponse(request, 'register.html', {'error': None})
+    return templates.TemplateResponse(request, "register.html", {"error": None})
 
 
-@router.post('/register')
+@router.post("/register")
 async def register_submit(
     request: Request,
     email: str = Form(...),
@@ -43,20 +43,20 @@ async def register_submit(
         user = await register_user(db, email=email, password=password)
     except EmailAlreadyRegisteredError:
         return templates.TemplateResponse(
-            request, 'register.html', {'error': 'Email already registered'}, status_code=400
+            request, "register.html", {"error": "Email already registered"}, status_code=400
         )
-    
-    response = RedirectResponse(url='/dashboard', status_code=303)
+
+    response = RedirectResponse(url="/dashboard", status_code=303)
     _set_auth_cookie(response, issue_token_for(user))
     return response
 
 
-@router.get('/login')
+@router.get("/login")
 async def login_form(request: Request):
-    return templates.TemplateResponse(request, 'login.html', {'error': None})
+    return templates.TemplateResponse(request, "login.html", {"error": None})
 
 
-@router.post('/login')
+@router.post("/login")
 async def login_submit(
     request: Request,
     email: str = Form(...),
@@ -67,16 +67,16 @@ async def login_submit(
         user = await authenticate_user(db, email=email, password=password)
     except InvalidCredentialError:
         return templates.TemplateResponse(
-            request, 'login.html', {'error': 'Invalid email or password'}, status_code=400
+            request, "login.html", {"error": "Invalid email or password"}, status_code=400
         )
-    
-    response = RedirectResponse(url='/dashboard', status_code=303)
+
+    response = RedirectResponse(url="/dashboard", status_code=303)
     _set_auth_cookie(response, issue_token_for(user))
     return response
 
 
-@router.post('/logout')
+@router.post("/logout")
 async def logout(user: User = Depends(get_current_user)):
-    response = RedirectResponse(url='/', status_code=303)
-    response.delete_cookie('access_token')
+    response = RedirectResponse(url="/", status_code=303)
+    response.delete_cookie("access_token")
     return response

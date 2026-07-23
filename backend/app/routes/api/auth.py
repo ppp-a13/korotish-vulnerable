@@ -14,21 +14,25 @@ from app.services.auth_service import (
 router = APIRouter()
 
 
-@router.post('/register', response_model=TokenResponse)
+@router.post("/register", response_model=TokenResponse)
 async def api_register(payload: RegisterRequest, db: AsyncSession = Depends(get_db)):
     try:
         user = await register_user(db, email=payload.email, password=payload.password)
     except EmailAlreadyRegisteredError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Email already registered')
-    
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
+        )
+
     return TokenResponse(access_token=issue_token_for(user))
 
 
-@router.post('/login', response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse)
 async def api_login(payload: LoginRequest, db: AsyncSession = Depends(get_db)):
     try:
         user = await authenticate_user(db, email=payload.email, password=payload.password)
     except InvalidCredentialError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid email or password')
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+        )
 
     return TokenResponse(access_token=issue_token_for(user))

@@ -4,11 +4,14 @@ import string
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Link, User
-from app.repositories.link_repository import create_link, get_link_by_code, search_links_by_owner
-from app.repositories.click_repository import create_click
-from app.repositories.click_repository import count_clicks_for_link
-from app.repositories.link_repository import get_link_by_id
-from app.repositories.link_repository import list_links_with_click_counts
+from app.repositories.click_repository import count_clicks_for_link, create_click
+from app.repositories.link_repository import (
+    create_link,
+    get_link_by_code,
+    get_link_by_id,
+    list_links_with_click_counts,
+    search_links_by_owner,
+)
 
 CODE_ALPHABET = string.ascii_letters + string.digits
 CODE_LENGTH = 7
@@ -17,16 +20,17 @@ CODE_LENGTH = 7
 class AliasTakenError(Exception):
     pass
 
+
 class LinkNotFoundError(Exception):
     pass
 
 
 async def _generate_unique_code(db: AsyncSession) -> str:
     for _ in range(5):
-        candidate = ''.join(secrets.choice(CODE_ALPHABET) for _ in range(CODE_LENGTH))
+        candidate = "".join(secrets.choice(CODE_ALPHABET) for _ in range(CODE_LENGTH))
         if await get_link_by_code(db, candidate) is None:
             return candidate
-    raise RuntimeError('Could not generate a unique code, try again')
+    raise RuntimeError("Could not generate a unique code, try again")
 
 
 async def create_new_link(
