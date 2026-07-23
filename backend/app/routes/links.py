@@ -5,7 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.services.link_service import LinkNotFoundError, resolve_link
 from app.templating import templates
-from app.services.link_service import get_link_with_stats
+from app.services.link_service import get_link_with_stats, search_user_links
+from app.dependencies import get_current_user
+from app.models import User
 
 router = APIRouter()
 
@@ -33,4 +35,16 @@ async def link_detail(link_id: int, request: Request, db: AsyncSession = Depends
 
     return templates.TemplateResponse(
         request, 'link_detail.html', {'link': link, 'click_count': click_count}
+    )
+
+@router.get('/search')
+async def search_links(
+    request: Request,
+    q: str = '',
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    results = await search_user_links(db, user, q) if q else []
+    return templates.TemplateResponse(
+        request, 'search.html', {'results': results, 'q': q}
     )

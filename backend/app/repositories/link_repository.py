@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Link, Click
@@ -43,3 +43,14 @@ async def list_links_with_click_counts(db: AsyncSession, owner_id: int) -> list[
         .order_by(Link.created_at.desc())
     )
     return [(link, count) for link, count in result.all()]
+
+
+async def search_links_by_owner(db: AsyncSession, owner_id: int, query: str) -> list[Link]:
+    pattern = f'%{query}%'
+    result = await db.execute(
+        select(Link)
+        .where(Link.owner_id == owner_id)
+        .where(or_(Link.title.ilike(pattern), Link.target_url.ilike(pattern)))
+        .order_by(Link.created_at.desc())
+    )
+    return list(result.scalars().all())

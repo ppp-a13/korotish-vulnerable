@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Поиск — korotish{% endblock %}
+{% block content %}
+<h1>Поиск по моим ссылкам</h1>
+<form method="get" action="/search">
+    <input type="text" name="q" value="{{ q }}" placeholder="Заголовок или URL">
+    <button type="submit">Искать</button>
+</form>
+
+{% if q and not results %}
+<p>Не найдено.</p>
+{% endif %}
+
+{% if results %}
+<ul>
+    {% for link in results %}
+    <li><a href="/links/{{ link.id }}">{{ link.title or link.code }}</a> — {{ link.target_url }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
