@@ -55,3 +55,18 @@ async def search_links_by_owner(db: AsyncSession, owner_id: int, query: str) -> 
         .order_by(Link.created_at.desc())
     )
     return list(result.scalars().all())
+
+
+async def list_all_links_with_click_counts(db: AsyncSession) -> list[tuple[Link, int]]:
+    result = await db.execute(
+        select(Link, func.count(Click.id))
+        .outerjoin(Click, Click.link_id == Link.id)
+        .group_by(Link.id)
+        .order_by(Link.created_at.desc())
+    )
+    return [(link, count) for link, count in result.all()]
+
+
+async def count_links(db: AsyncSession) -> int:
+    result = await db.execute(select(func.count()).select_from(Link))
+    return result.scalar_one()

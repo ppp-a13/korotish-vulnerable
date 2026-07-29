@@ -7,6 +7,7 @@ from app.routes import auth as auth_routes
 from app.routes import links as links_routes
 from app.routes import pages as pages_routes
 from app.routes.api import auth as api_auth_routes
+from app.routes import admin as admin_routes
 
 app = FastAPI(title="korotish")
 
@@ -14,6 +15,7 @@ app.include_router(auth_routes.router, tags=["auth-html"])
 app.include_router(api_auth_routes.router, prefix="/api/auth", tags=["auth-api"])
 app.include_router(pages_routes.router, tags=["pages"])
 app.include_router(links_routes.router, tags=["links"])
+app.include_router(admin_routes.router, tags=['admin'])
 
 
 @app.get("/health")

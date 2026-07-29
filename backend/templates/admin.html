@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Admin — korotish{% endblock %}
+{% block content %}
+<h1>Панель администратора</h1>
+<p>Пользователей: {{ total_users }}  Ссылок: {{ total_links }}  Переходов: {{ total_clicks }}</p>
+
+<h2>Пользователи</h2>
+<table>
+    <thead><tr><th>Email</th><th>Админ</th><th>Создан</th></tr></thead>
+    <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.email }}</td>
+            <td>{{ 'да' if u.is_admin else '—' }}</td>
+            <td>{{ u.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Все ссылки</h2>
+<table>
+    <thead><tr><th>Код</th><th>Владелец</th><th>Переадресация</th><th>Переходов</th></tr></thead>
+    <tbody>
+        {% for link, click_count in links_with_counts %}
+        <tr>
+            <td><a href="/links/{{ link.id }}">{{ link.code }}</a></td>
+            <td>{{ link.owner_id or 'анонимно' }}</td>
+            <td>{{ link.target_url }}</td>
+            <td>{{ click_count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import User
@@ -15,3 +15,13 @@ async def create_user(db: AsyncSession, email: str, password_hash: str) -> User:
     await db.commit()
     await db.refresh(user)
     return user
+
+
+async def list_all_users(db: AsyncSession) -> list[User]:
+    result = await db.execute(select(User).order_by(User.created_at.desc()))
+    return list(result.scalars().all())
+
+
+async def count_users(db: AsyncSession) -> int:
+    result = await db.execute(select(func.count()).select_from(User))
+    return result.scalar_one()

@@ -16,3 +16,7 @@ async def count_clicks_for_link(db: AsyncSession, link_id: int) -> int:
         select(func.count()).select_from(Click).where(Click.link_id == link_id)
     )
     return result.scalar_one()
+
+async def count_clicks(db: AsyncSession) -> int:
+    result = await db.execute(select(func.count()).select_from(Click))
+    return result.scalar_one()
